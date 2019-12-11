@@ -18,7 +18,10 @@
 pragma solidity ^0.5.12;
 
 import "ds-note/note.sol";
-import "osm/osm.sol";
+
+contract OsmLike {
+    function stop() external;
+}
 
 contract OsmMom is DSNote {
     address public owner;
@@ -29,11 +32,11 @@ contract OsmMom is DSNote {
     function deny(address usr) public note onlyOwner { wards[usr] = 0; }
     modifier auth { require(owner == msg.sender || wards[msg.sender] == 1); _; }
 
-    OSM public osm_;
+    OsmLike public osm;
 
-    constructor(OSM osmAddress) public {
+    constructor(address osm_) public {
         owner = msg.sender;
-        osm_ = osmAddress;
+        osm = OsmLike(osm_);
     }
 
     function setOwner(address owner_) public note onlyOwner {
@@ -41,14 +44,6 @@ contract OsmMom is DSNote {
     }
 
     function stop() external auth {
-        osm_.stop();
-    }
-
-    function start() external auth {
-        osm_.start();
-    }
-
-    function void() external auth {
-        osm_.void();
+        osm.stop();
     }
 }
