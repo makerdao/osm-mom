@@ -38,19 +38,79 @@ contract OsmMomCaller {
 }
 
 contract OsmMomTest is DSTest {
-    OsmLike osm;
+    OSM osm_;
     OsmMom mom;
     OsmMomCaller caller;
 
     function setUp() public {
-        // mom = new OsmMom();
+        osm_ = new OSM(address(this));
+        mom = new OsmMom(osm_);
+        caller = new OsmMomCaller(mom);
+        osm_.rely(address(mom));
     }
 
-    function testFail_basic_sanity() public {
-        assertTrue(false);
+    function testVerifySetup() public {
+        assertTrue(mom.owner() == address(this));
+        assertEq(osm_.wards(address(mom)), 1);
     }
 
-    function test_basic_sanity() public {
-        assertTrue(true);
+    function testRely() public {
+        assertEq(mom.wards(address(caller)), 0);
+        mom.rely(address(caller));
+        assertEq(mom.wards(address(caller)), 1);
+    }
+
+    function testFailRely() public {
+        caller.rely(address(caller));
+    }
+
+    function testDeny() public {
+        mom.rely(address(caller));
+        mom.deny(address(caller));
+        assertEq(mom.wards(address(caller)), 0);
+    }
+
+    function testFailDeny() public {
+        caller.deny(address(caller));
+    }
+
+    function testStop() public {
+        mom.rely(address(caller));
+        caller.stop();
+        assertEq(osm_.stopped(),1);
+    }
+
+    function testFailStop() public {
+        caller.stop();
+    }
+
+    function testStart() public {
+        mom.rely(address(caller));
+        caller.stop();
+        assertEq(osm_.stopped(),1);
+        caller.start();
+        assertEq(osm_.stopped(),0);
+    }
+
+    function testFailStart() public {
+        caller.start();
+    }
+
+    function testVoid() public {
+        mom.rely(address(caller));
+        osm_.kiss(address(this));
+        caller.void();
+        bytes32 val;
+        bool has;
+        (val, has) = osm_.peek();
+        assertTrue(val == bytes32(0));
+        assertTrue(!has);
+        (val, has) = osm_.peep();
+        assertTrue(val == bytes32(0));
+        assertTrue(!has);
+    }
+
+    function testFailVoid() public {
+        caller.void();
     }
 }
