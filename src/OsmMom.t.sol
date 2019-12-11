@@ -1,7 +1,7 @@
 pragma solidity ^0.5.12;
 
 import "ds-test/test.sol";
-
+import "osm/osm.sol";
 import "./OsmMom.sol";
 
 contract OsmMomCaller {
@@ -23,14 +23,6 @@ contract OsmMomCaller {
     mom.deny(usr);
   }
 
-  function stop() public {
-    mom.stop();
-  }
-
-  function start() public {
-    mom.start();
-  }
-
   function void() public {
     mom.void();
   }
@@ -44,7 +36,7 @@ contract OsmMomTest is DSTest {
 
     function setUp() public {
         osm_ = new OSM(address(this));
-        mom = new OsmMom(osm_);
+        mom = new OsmMom(address(osm_));
         caller = new OsmMomCaller(mom);
         osm_.rely(address(mom));
     }
@@ -72,28 +64,6 @@ contract OsmMomTest is DSTest {
 
     function testFailDeny() public {
         caller.deny(address(caller));
-    }
-
-    function testStop() public {
-        mom.rely(address(caller));
-        caller.stop();
-        assertEq(osm_.stopped(),1);
-    }
-
-    function testFailStop() public {
-        caller.stop();
-    }
-
-    function testStart() public {
-        mom.rely(address(caller));
-        caller.stop();
-        assertEq(osm_.stopped(),1);
-        caller.start();
-        assertEq(osm_.stopped(),0);
-    }
-
-    function testFailStart() public {
-        caller.start();
     }
 
     function testVoid() public {
