@@ -29,26 +29,29 @@ contract OsmMom is DSNote {
     function deny(address usr) public note onlyOwner { wards[usr] = 0; }
     modifier auth { require(owner == msg.sender || wards[msg.sender] == 1); _; }
 
-    OSM public osm_;
+    mapping (bytes32 => address) public osms;
 
-    constructor(OSM osmAddress) public {
+    constructor() public {
         owner = msg.sender;
-        osm_ = osmAddress;
+    }
+
+    function setOsm(bytes32 ilk, address osm) public note onlyOwner {
+        osms[ilk] = osm;
     }
 
     function setOwner(address owner_) public note onlyOwner {
         owner = owner_;
     }
 
-    function stop() external auth {
-        osm_.stop();
+    function stop(bytes32 ilk) external auth {
+        OSM(osms[ilk]).stop();
     }
 
-    function start() external auth {
-        osm_.start();
+    function start(bytes32 ilk) external auth {
+        OSM(osms[ilk]).start();
     }
 
-    function void() external auth {
-        osm_.void();
+    function void(bytes32 ilk) external auth {
+        OSM(osms[ilk]).void();
     }
 }

@@ -23,16 +23,16 @@ contract OsmMomCaller {
     mom.deny(usr);
   }
 
-  function stop() public {
-    mom.stop();
+  function stop(bytes32 ilk) public {
+    mom.stop(ilk);
   }
 
-  function start() public {
-    mom.start();
+  function start(bytes32 ilk) public {
+    mom.start(ilk);
   }
 
-  function void() public {
-    mom.void();
+  function void(bytes32 ilk) public {
+    mom.void(ilk);
   }
 
 }
@@ -44,7 +44,8 @@ contract OsmMomTest is DSTest {
 
     function setUp() public {
         osm_ = new OSM(address(this));
-        mom = new OsmMom(osm_);
+        mom = new OsmMom();
+        mom.setOsm("ETH-A", address(osm_));
         caller = new OsmMomCaller(mom);
         osm_.rely(address(mom));
     }
@@ -76,30 +77,30 @@ contract OsmMomTest is DSTest {
 
     function testStop() public {
         mom.rely(address(caller));
-        caller.stop();
+        caller.stop("ETH-A");
         assertEq(osm_.stopped(),1);
     }
 
     function testFailStop() public {
-        caller.stop();
+        caller.stop("ETH-A");
     }
 
     function testStart() public {
         mom.rely(address(caller));
-        caller.stop();
+        caller.stop("ETH-A");
         assertEq(osm_.stopped(),1);
-        caller.start();
+        caller.start("ETH-A");
         assertEq(osm_.stopped(),0);
     }
 
     function testFailStart() public {
-        caller.start();
+        caller.start("ETH-A");
     }
 
     function testVoid() public {
         mom.rely(address(caller));
         osm_.kiss(address(this));
-        caller.void();
+        caller.void("ETH-A");
         bytes32 val;
         bool has;
         (val, has) = osm_.peek();
@@ -111,6 +112,6 @@ contract OsmMomTest is DSTest {
     }
 
     function testFailVoid() public {
-        caller.void();
+        caller.void("ETH-A");
     }
 }
