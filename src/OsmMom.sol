@@ -23,14 +23,30 @@ contract OsmLike {
     function stop() external;
 }
 
+contract AuthorityLike {
+    function canCall(address src, address dst, bytes4 sig) public view returns (bool);
+}
+
 contract OsmMom is DSNote {
     address public owner;
     modifier onlyOwner { require(msg.sender == owner); _;}
 
-    mapping (address => uint) public wards;
-    function rely(address usr) public note onlyOwner { wards[usr] = 1; }
-    function deny(address usr) public note onlyOwner { wards[usr] = 0; }
-    modifier auth { require(owner == msg.sender || wards[msg.sender] == 1); _; }
+    address public authority;
+    modifier auth {
+        require(isAuthorized(msg.sender, msg.sig), "osm-mom/not-authorized");
+        _;
+    }
+    function isAuthorized(address src, bytes4 sig) internal view returns (bool) {
+        if (src == address(this)) {
+            return true;
+        } else if (src == owner) {
+            return true;
+        } else if (authority == address(0)) {
+            return false;
+        } else {
+            return AuthorityLike(authority).canCall(src, address(this), sig);
+        }
+    }
 
     mapping (bytes32 => address) public osms;
 
@@ -38,12 +54,16 @@ contract OsmMom is DSNote {
         owner = msg.sender;
     }
 
-    function setOsm(bytes32 ilk, address osm) public note onlyOwner {
+    function setOsm(bytes32 ilk, address osm) external note onlyOwner {
         osms[ilk] = osm;
     }
 
-    function setOwner(address owner_) public note onlyOwner {
+    function setOwner(address owner_) external note onlyOwner {
         owner = owner_;
+    }
+
+    function setAuthority(address authority_) external note onlyOwner {
+        authority = authority_;
     }
 
     function stop(bytes32 ilk) external auth {
