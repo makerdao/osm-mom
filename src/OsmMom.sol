@@ -18,7 +18,11 @@
 pragma solidity ^0.5.12;
 
 import "ds-note/note.sol";
-import "osm/osm.sol";
+contract OsmLike {
+    function start() external;
+    function stop() external;
+    function void() external;
+}
 
 contract OsmMom is DSNote {
     address public owner;
@@ -44,14 +48,14 @@ contract OsmMom is DSNote {
     }
 
     function stop(bytes32 ilk) external auth {
-        OSM(osms[ilk]).stop();
+        OsmLike(osms[ilk]).stop();
     }
 
     function start(bytes32 ilk) external auth {
-        OSM(osms[ilk]).start();
+        OsmLike(osms[ilk]).start();
     }
 
     function void(bytes32 ilk) external auth {
-        OSM(osms[ilk]).void();
+        OsmLike(osms[ilk]).void();
     }
 }
