@@ -20,6 +20,10 @@ contract OsmMomCaller {
         mom.setAuthority(newAuthority);
     }
 
+    function setOsm(bytes32 ilk, address osm) public {
+        mom.setOsm(ilk, osm);
+    }
+
     function stop(bytes32 ilk) public {
         mom.stop(ilk);
     }
@@ -77,6 +81,16 @@ contract OsmMomTest is DSTest {
     function testFailSetAuthority() public {
         // fails because the caller is not the owner
         caller.setAuthority(address(0));
+    }
+
+    function testSetOsm() public {
+        mom.setOsm("ETH-B", address(1));
+        assertTrue(mom.osms("ETH-B") == address(1));
+    }
+
+    function testFailSetOsm() public {
+        // fails because the caller is not an owner
+        caller.setOsm("ETH-A", address(0));
     }
 
     function testStopAuthorized() public {
