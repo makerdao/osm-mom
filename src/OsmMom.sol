@@ -54,7 +54,7 @@ contract OsmMom {
     }
 
     address public owner;
-    modifier onlyOwner { require(msg.sender == owner); _;}
+    modifier onlyOwner { require(msg.sender == owner, "osm-mom/only-owner"); _;}
 
     address public authority;
     modifier auth {
