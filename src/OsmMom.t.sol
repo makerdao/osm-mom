@@ -2,7 +2,7 @@ pragma solidity ^0.5.12;
 
 import "ds-test/test.sol";
 
-import "osm/OSM.sol";
+import "osm/osm.sol";
 import "./OsmMom.sol";
 
 contract OsmMomCaller {
