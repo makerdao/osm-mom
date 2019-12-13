@@ -15,40 +15,83 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.12;
+pragma solidity 0.5.12;
 
-import "ds-note/note.sol";
-import "osm/osm.sol";
+contract OsmLike {
+    function stop() external;
+}
 
-contract OsmMom is DSNote {
-    address public owner;
-    modifier onlyOwner { require(msg.sender == owner); _;}
+contract AuthorityLike {
+    function canCall(address src, address dst, bytes4 sig) public view returns (bool);
+}
 
-    mapping (address => uint) public wards;
-    function rely(address usr) public note onlyOwner { wards[usr] = 1; }
-    function deny(address usr) public note onlyOwner { wards[usr] = 0; }
-    modifier auth { require(owner == msg.sender || wards[msg.sender] == 1); _; }
+contract OsmMom {
+    event LogNote(
+        bytes4   indexed  sig,
+        address  indexed  usr,
+        bytes32  indexed  arg1,
+        bytes32  indexed  arg2,
+        bytes             data
+    ) anonymous;
 
-    OSM public osm_;
-
-    constructor(OSM osmAddress) public {
-        owner = msg.sender;
-        osm_ = osmAddress;
+    modifier note {
+        _;
+        assembly {
+            // log an 'anonymous' event with a constant 6 words of calldata
+            // and four indexed topics: selector, caller, arg1 and arg2
+            let mark := msize                         // end of memory ensures zero
+            mstore(0x40, add(mark, 288))              // update free memory pointer
+            mstore(mark, 0x20)                        // bytes type data offset
+            mstore(add(mark, 0x20), 224)              // bytes size (padded)
+            calldatacopy(add(mark, 0x40), 0, 224)     // bytes payload
+            log4(mark, 288,                           // calldata
+                 shl(224, shr(224, calldataload(0))), // msg.sig
+                 caller,                              // msg.sender
+                 calldataload(4),                     // arg1
+                 calldataload(36)                     // arg2
+                )
+        }
     }
 
-    function setOwner(address owner_) public note onlyOwner {
+    address public owner;
+    modifier onlyOwner { require(msg.sender == owner, "osm-mom/only-owner"); _;}
+
+    address public authority;
+    modifier auth {
+        require(isAuthorized(msg.sender, msg.sig), "osm-mom/not-authorized");
+        _;
+    }
+    function isAuthorized(address src, bytes4 sig) internal view returns (bool) {
+        if (src == address(this)) {
+            return true;
+        } else if (src == owner) {
+            return true;
+        } else if (authority == address(0)) {
+            return false;
+        } else {
+            return AuthorityLike(authority).canCall(src, address(this), sig);
+        }
+    }
+
+    mapping (bytes32 => address) public osms;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function setOsm(bytes32 ilk, address osm) external note onlyOwner {
+        osms[ilk] = osm;
+    }
+
+    function setOwner(address owner_) external note onlyOwner {
         owner = owner_;
     }
 
-    function stop() external auth {
-        osm_.stop();
+    function setAuthority(address authority_) external note onlyOwner {
+        authority = authority_;
     }
 
-    function start() external auth {
-        osm_.start();
-    }
-
-    function void() external auth {
-        osm_.void();
+    function stop(bytes32 ilk) external note auth {
+        OsmLike(osms[ilk]).stop();
     }
 }
