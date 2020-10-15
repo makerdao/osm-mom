@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.5.12;
+pragma solidity >=0.5.12;
 
 import "ds-test/test.sol";
 
@@ -119,7 +119,7 @@ contract OsmMomTest is DSTest {
     }
 
     function testFailStopCallerNotAuthorized() public {
-        SimpleAuthority newAuthority = new SimpleAuthority(address(this));  
+        SimpleAuthority newAuthority = new SimpleAuthority(address(this));
         mom.setAuthority(address(newAuthority));
         // fails because the caller is no longer authorized on the mom
         caller.stop("ETH-A");
