@@ -1,4 +1,6 @@
-// Copyright (C) 2019 Maker Ecosystem Growth Holdings, INC.
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+// Copyright (C) 2019-22 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -13,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.12;
+pragma solidity ^0.8.14;
 
 import "ds-test/test.sol";
 
@@ -30,7 +32,7 @@ contract OsmMock {
 
     uint256 public stopped;
 
-    constructor () public {
+    constructor () {
         wards[msg.sender] = 1;
     }
 
@@ -46,7 +48,7 @@ contract OsmMock {
 contract OsmMomCaller {
     OsmMom mom;
 
-    constructor(OsmMom mom_) public {
+    constructor(OsmMom mom_) {
         mom = mom_;
     }
 
@@ -70,7 +72,7 @@ contract OsmMomCaller {
 contract SimpleAuthority {
     address public authorized_caller;
 
-    constructor(address authorized_caller_) public {
+    constructor(address authorized_caller_) {
         authorized_caller = authorized_caller_;
     }
 

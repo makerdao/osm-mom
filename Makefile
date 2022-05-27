@@ -1,4 +1,4 @@
-build  :; dapp --use solc:0.5.12 build
+build  :; dapp --use solc:0.8.14 build
 clean  :; dapp clean
-test   :; dapp --use solc:0.5.12 test -v ${TEST_FLAGS}
+test   :; dapp --use solc:0.8.14 test -v ${TEST_FLAGS}
 deploy :; make build && dapp create OsmMom
