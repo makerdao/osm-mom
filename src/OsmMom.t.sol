@@ -17,8 +17,31 @@ pragma solidity >=0.5.12;
 
 import "ds-test/test.sol";
 
-import "osm/osm.sol";
 import "./OsmMom.sol";
+
+contract OsmMock {
+    mapping (address => uint) public wards;
+    function rely(address usr) external auth { wards[usr] = 1; }
+    function deny(address usr) external auth { wards[usr] = 0; }
+    modifier auth {
+        require(wards[msg.sender] == 1, "OSM/not-authorized");
+        _;
+    }
+
+    uint256 public stopped;
+
+    constructor () public {
+        wards[msg.sender] = 1;
+    }
+
+    function stop() external auth {
+        stopped = 1;
+    }
+
+    function start() external auth {
+        stopped = 0;
+    }
+}
 
 contract OsmMomCaller {
     OsmMom mom;
@@ -57,13 +80,13 @@ contract SimpleAuthority {
 }
 
 contract OsmMomTest is DSTest {
-    OSM osm;
+    OsmMock osm;
     OsmMom mom;
     OsmMomCaller caller;
     SimpleAuthority authority;
 
     function setUp() public {
-        osm = new OSM(address(this));
+        osm = new OsmMock();
         mom = new OsmMom();
         mom.setOsm("ETH-A", address(osm));
         caller = new OsmMomCaller(mom);
