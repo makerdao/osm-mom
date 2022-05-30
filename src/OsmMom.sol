@@ -44,9 +44,10 @@ contract OsmMom {
 
     address public immutable vat;
 
-    event SetOsm(bytes32 ilk, address osm);
     event SetOwner(address owner);
     event SetAuthority(address authority);
+    event File(bytes32 indexed what, address data);
+    event SetOsm(bytes32 ilk, address osm);
     event Stop(bytes32 ilk);
 
     modifier onlyOwner {
@@ -77,19 +78,6 @@ contract OsmMom {
         emit SetOwner(msg.sender);
     }
 
-    function file(bytes32 what, address data) external onlyOwner {
-        if (what == "autoLine") {
-            autoLine = data;
-        } else {
-            revert("OsmMom/file-unrecognized-param");
-        }
-    }
-
-    function setOsm(bytes32 ilk, address osm) external onlyOwner {
-        osms[ilk] = osm;
-        emit SetOsm(ilk, osm);
-    }
-
     function setOwner(address owner_) external onlyOwner {
         owner = owner_;
         emit SetOwner(owner_);
@@ -98,6 +86,20 @@ contract OsmMom {
     function setAuthority(address authority_) external onlyOwner {
         authority = authority_;
         emit SetAuthority(authority_);
+    }
+
+    function file(bytes32 what, address data) external onlyOwner {
+        if (what == "autoLine") {
+            autoLine = data;
+        } else {
+            revert("OsmMom/file-unrecognized-param");
+        }
+        emit File(what, data);
+    }
+
+    function setOsm(bytes32 ilk, address osm) external onlyOwner {
+        osms[ilk] = osm;
+        emit SetOsm(ilk, osm);
     }
 
     function stop(bytes32 ilk) external auth {
