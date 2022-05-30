@@ -2,7 +2,7 @@
 
 /// OsmMom -- governance interface for the OSM
 
-// Copyright (C) 2019-22 Dai Foundation
+// Copyright (C) 2019-2022 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
