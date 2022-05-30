@@ -48,12 +48,12 @@ contract OsmMom {
     event Stop(bytes32 ilk);
 
     modifier onlyOwner {
-        require(msg.sender == owner, "osm-mom/only-owner");
+        require(msg.sender == owner, "OsmMom/only-owner");
         _;
     }
 
     modifier auth {
-        require(isAuthorized(msg.sender, msg.sig), "osm-mom/not-authorized");
+        require(isAuthorized(msg.sender, msg.sig), "OsmMom/not-authorized");
         _;
     }
 
