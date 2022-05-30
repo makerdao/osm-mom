@@ -40,6 +40,8 @@ contract OsmMom {
     address public authority;
     address public autoLine;
 
+    mapping (bytes32 => address) public osms;
+
     address public immutable vat;
 
     event SetOsm(bytes32 ilk, address osm);
@@ -68,8 +70,6 @@ contract OsmMom {
             return AuthorityLike(authority).canCall(src, address(this), sig);
         }
     }
-
-    mapping (bytes32 => address) public osms;
 
     constructor(address vat_) {
         vat = vat_;
