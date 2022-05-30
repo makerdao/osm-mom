@@ -89,11 +89,8 @@ contract OsmMom {
     }
 
     function file(bytes32 what, address data) external onlyOwner {
-        if (what == "autoLine") {
-            autoLine = data;
-        } else {
-            revert("OsmMom/file-unrecognized-param");
-        }
+        if (what == "autoLine") autoLine = data;
+        else revert("OsmMom/file-unrecognized-param");
         emit File(what, data);
     }
 
