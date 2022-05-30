@@ -62,7 +62,7 @@ contract VatMock {
         uint256 dust;  // Urn Debt Floor            [rad]
     }
 
-    mapping (bytes32 => Ilk)                       public ilks;
+    mapping (bytes32 => Ilk) public ilks;
 
     constructor() {
         wards[msg.sender] = 1;
@@ -166,12 +166,14 @@ contract OsmMomTest is DSTest {
         vat = new VatMock();
         vat.file("ETH-A", "line", 100);
         assertEq(getVatIlkLine("ETH-A"), 100);
+
         autoLine = new AutoLineMock();
         autoLine.setIlk("ETH-A", 1000, 100, 60);
         (uint256 l, uint256 g, uint256 t,,) = autoLine.ilks("ETH-A");
         assertEq(l, 1000);
         assertEq(g, 100);
         assertEq(t, 60);
+
         osm = new OsmMock();
 
         mom = new OsmMom(address(vat));
