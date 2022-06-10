@@ -44,11 +44,11 @@ contract OsmMom {
 
     address public immutable vat;
 
-    event SetOwner(address owner);
-    event SetAuthority(address authority);
+    event SetOwner(address indexed owner);
+    event SetAuthority(address indexed authority);
     event File(bytes32 indexed what, address data);
-    event SetOsm(bytes32 ilk, address osm);
-    event Stop(bytes32 ilk);
+    event SetOsm(bytes32 indexed ilk, address osm);
+    event Stop(bytes32 indexed ilk);
 
     modifier onlyOwner {
         require(msg.sender == owner, "OsmMom/only-owner");
