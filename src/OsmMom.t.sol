@@ -22,7 +22,7 @@ import "ds-test/test.sol";
 import "./OsmMom.sol";
 
 contract OsmMock {
-    mapping (address => uint) public wards;
+    mapping (address => uint256) public wards;
     function rely(address usr) external auth { wards[usr] = 1; }
     function deny(address usr) external auth { wards[usr] = 0; }
     modifier auth {
@@ -46,7 +46,7 @@ contract OsmMock {
 }
 
 contract VatMock {
-    mapping (address => uint) public wards;
+    mapping (address => uint256) public wards;
     function rely(address usr) external auth { wards[usr] = 1; }
     function deny(address usr) external auth { wards[usr] = 0; }
     modifier auth {
@@ -68,7 +68,7 @@ contract VatMock {
         wards[msg.sender] = 1;
     }
 
-    function file(bytes32 ilk, bytes32 what, uint data) external auth {
+    function file(bytes32 ilk, bytes32 what, uint256 data) external auth {
         if (what == "line") ilks[ilk].line = data;
         else revert("Vat/file-unrecognized-param");
     }
