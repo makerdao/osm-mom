@@ -224,6 +224,11 @@ contract OsmMomTest is DSTest {
         assertTrue(mom.osms("ETH-B") == address(1));
     }
 
+    function testFileAutoLine() public {
+        mom.file("autoLine", address(1));
+        assertTrue(mom.autoLine() == address(1));
+    }
+
     function testFailFileAutoLine() public {
         // fails because the caller is not an owner
         caller.file("autoLine", address(1));
